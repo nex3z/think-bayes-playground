@@ -1,3 +1,4 @@
+import numpy as np
 import pandas as pd
 
 
@@ -5,6 +6,7 @@ class DfWrapper(object):
     def __init__(self, values=None, name=''):
         self.name = name
         self.d = pd.DataFrame(columns=['prob'])
+        self.d.prob = self.d.prob.astype(float)
         self.d.index.name = 'hypo'
 
         if values is None:
@@ -34,6 +36,9 @@ class DfWrapper(object):
 
     def __init_failure(self, values):
         raise ValueError('Initialization failed')
+
+    def iter_items(self):
+        return self.d.prob.iteritems()
 
     def hypos(self):
         return self.d.index.values
