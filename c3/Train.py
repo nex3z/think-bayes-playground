@@ -3,9 +3,9 @@ from common.Suite import Suite
 
 class Train(Suite):
     def __init__(self, values=None, prob_dist=lambda hypos: [1.0 / len(hypos) for _ in hypos]):
-        super().__init__(values, hypo_desc='Train number')
+        super().__init__(values, value_desc='Train number')
         probs = prob_dist(values)
-        for hypo, prob in zip(self.hypos(), probs):
+        for hypo, prob in zip(self.values(), probs):
             self.set(hypo, prob)
         self.normalize()
 
