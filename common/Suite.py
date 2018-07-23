@@ -7,14 +7,14 @@ class Suite(Pmf):
         raise UnimplementedMethodException()
 
     def update(self, data):
-        for hypo in self.hypos():
+        for hypo in self.values():
             like = self.likelihood(data, hypo)
             self.mult(hypo, like)
         return self.normalize()
 
     def update_set(self, dataset):
         for data in dataset:
-            for hypo in self.hypos():
+            for hypo in self.values():
                 like = self.likelihood(data, hypo)
                 self.mult(hypo, like)
         return self.normalize()
