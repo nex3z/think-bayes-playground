@@ -12,7 +12,7 @@ class Cookie(Pmf):
         return mix[data]
 
     def update(self, data):
-        for hypo in self.hypos():
+        for hypo in self.values():
             like = self.likelihood(data, hypo)
             self.mult(hypo, like)
         self.normalize()
