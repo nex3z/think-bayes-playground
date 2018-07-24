@@ -87,6 +87,9 @@ class Pmf(DfWrapper):
         cdf.ps = [p ** k for p in cdf.ps]
         return cdf
 
+    def print(self):
+        print(self.d)
+
     def plot(self, legend=False):
         ax = self.d.plot(legend=legend)
         ax.set_xlabel(self.value_desc)
