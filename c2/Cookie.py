@@ -2,10 +2,9 @@ from common.Pmf import Pmf
 
 
 class Cookie(Pmf):
-    mixes = {
-        'Bowl 1': dict(vanilla=0.75, chocolate=0.25),
-        'Bowl 2': dict(vanilla=0.5, chocolate=0.5)
-    }
+    bowl_1 = {'vanilla': 0.75, 'chocolate': 0.25}
+    bowl_2 = {'vanilla': 0.5, 'chocolate': 0.5}
+    mixes = {'Bowl 1': bowl_1, 'Bowl 2': bowl_2}
 
     def likelihood(self, data, hypo):
         mix = self.mixes[hypo]
