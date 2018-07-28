@@ -35,6 +35,10 @@ class Pmf(DfWrapper):
     def prob_less(self, x):
         return self.d.loc[self.d.index < x, 'prob'].sum()
 
+    def top(self, n=5):
+        df_sort = self.d.sort_values('prob', ascending=False)
+        return df_sort.head(n)
+
     def mean(self):
         return (self.d.index * self.d.prob).sum()
 
