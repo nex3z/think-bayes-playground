@@ -16,5 +16,5 @@ class Euro(Suite):
         print("Maximum likelihood: {}".format(self.max_likelihood()))
         print("Mean: {}".format(self.mean()))
         print("Median: {}".format(cdf.percentile(50)))
-        print("Credible Interval: {}".format(cdf.credible_interval()))
+        print("Credible Interval (90%): {}".format(cdf.credible_interval(90)))
         print("P(x = 50%) = {}".format(self.prob(50)))
