@@ -1,9 +1,9 @@
 import matplotlib.pyplot as plt
 import numpy as np
 
-import common.util as util
-from c6.Price import Price
 from c6.GainCalculator import GainCalculator
+from c6.Price import Price
+from c6.c6_util import make_cdf_from_list
 from common.EstimatedPdf import EstimatedPdf
 from common.GaussianPdf import GaussianPdf
 
@@ -11,7 +11,7 @@ from common.GaussianPdf import GaussianPdf
 class Player(object):
     def __init__(self, prices, bids, diffs):
         self.pdf_price = EstimatedPdf(prices)
-        self.cdf_diff = util.make_cdf_from_list(diffs)
+        self.cdf_diff = make_cdf_from_list(diffs)
         mu = 0
         sigma = np.std(diffs)
         self.pdf_error = GaussianPdf(mu, sigma)
