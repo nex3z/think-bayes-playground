@@ -1,5 +1,7 @@
 import random
 
+import matplotlib.pyplot as plt
+
 import common.Cdf
 from common.DfWrapper import DfWrapper
 
@@ -51,11 +53,11 @@ class Pmf(DfWrapper):
                 return value
 
     def credible_interval(self, percentage=90):
-        prob = (100 - percentage) / 2
-        return self.percentile(prob), self.percentile(100 - prob)
+        cdf = self.make_cdf()
+        return cdf.credible_interval(percentage)
 
     def max_likelihood(self):
-        return self.d.index[self.d.prob.idxmax()]
+        return self.d.prob.idxmax()
 
     def random(self):
         if self.is_empty():
@@ -71,25 +73,10 @@ class Pmf(DfWrapper):
         assert False
 
     def make_cdf(self, name=None):
-        self.sort()
-
-        run_sum = 0
-        xs = []
-        cs = []
-        for value, prob in self.iter_items():
-            run_sum += prob
-            xs.append(value)
-            cs.append(run_sum)
-        total = float(run_sum)
-        ps = [c / total for c in cs]
-
+        df_cdf = self.d.copy()
+        df_cdf.sort_index(inplace=True)
         name = name if name is not None else self.name
-        return common.Cdf.Cdf(xs, ps, name)
-
-    def max(self, k):
-        cdf = self.make_cdf()
-        cdf.ps = [p ** k for p in cdf.ps]
-        return cdf
+        return common.Cdf.Cdf(df_cdf.index, df_cdf.prob.cumsum(), name, self.value_desc)
 
     def print(self):
         print(self.d)
@@ -98,6 +85,14 @@ class Pmf(DfWrapper):
         ax = self.d.plot(legend=legend)
         ax.set_xlabel(self.value_desc)
         ax.set_ylabel('Probability')
+
+    def plot_with(self, pmfs):
+        plt.figure()
+        plt.plot(self.d.index, self.d.prob, label=self.name)
+        for pmf in pmfs:
+            plt.plot(pmf.d.prob, label=pmf.name)
+        plt.legend()
+        plt.show()
 
     def plot_bar(self, legend=False):
         ax = self.d.plot.bar(legend=legend)

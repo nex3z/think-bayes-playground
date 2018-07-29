@@ -96,5 +96,5 @@ class DfWrapper(object):
         new.name = name if name is not None else self.name
         return new
 
-    def __iter__(self):
-        return self.d.iterrows()
+    # def __iter__(self):
+    #     return self.d.iterrows()
