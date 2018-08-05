@@ -1,5 +1,4 @@
 import pandas as pd
-from common.Pmf import Pmf
 
 
 def read_showcases(file_name):
@@ -10,11 +9,3 @@ def read_showcases(file_name):
     df_data = df_data.T
     df_data.columns.name = None
     return df_data
-
-
-def make_cdf_from_list(values, name=''):
-    pmf = Pmf()
-    for value in values:
-        pmf.incr(value)
-    pmf.normalize()
-    return pmf.make_cdf(name=name)
