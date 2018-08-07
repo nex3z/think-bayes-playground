@@ -1,10 +1,10 @@
 from common.Suite import Suite
-import common.util as util
+from common.util import eval_poisson_pmf
 
 
 class ArrivalRate(Suite):
     def likelihood(self, data, hypo):
         lam = hypo
         y, k = data
-        like = util.eval_poisson_pmf(lam * y, k)
+        like = eval_poisson_pmf(lam * y, k)
         return like

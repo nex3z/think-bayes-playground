@@ -8,6 +8,12 @@ class ElapsedTimeEstimator(object):
         self.post_x.update((lam, num_passengers))
         self.pmf_y = predict_wait_time(wtc.pmf_zb, self.post_x)
 
+    def plot_cdf(self):
+        cdf_prior_x = self.prior_x.make_cdf('prior x')
+        cdf_post_x = self.post_x.make_cdf('posterior x')
+        cdf_y = self.pmf_y.make_cdf('y')
+        cdf_prior_x.plot_with([cdf_post_x, cdf_y])
+
 
 def predict_wait_time(pmf_zb, pmf_x):
     pmf_y = pmf_zb - pmf_x
@@ -17,3 +23,4 @@ def predict_wait_time(pmf_zb, pmf_x):
 
 def remove_negatives(pmf):
     pmf.d = pmf.d.loc[pmf.d.index >= 0, ]
+    pmf.normalize()

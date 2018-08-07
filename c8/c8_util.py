@@ -1,7 +1,6 @@
-from common.Pmf import Pmf
-import common.util as util
 from common.EstimatedPdf import EstimatedPdf
-
+from common.Pmf import Pmf
+from common.util import make_mixture
 
 OBSERVED_GAP_TIMES = [
     428.0, 705.0, 407.0, 465.0, 433.0, 425.0, 204.0, 506.0, 143.0, 351.0,
@@ -14,34 +13,35 @@ OBSERVED_GAP_TIMES = [
 ]
 
 
-def get_sample_pmf_z(gap_times=OBSERVED_GAP_TIMES):
-    xs = make_range(low=10)
-    pdf_z = EstimatedPdf(gap_times)
-    pmf_z = pdf_z.make_pmf(xs, name="z")
-    return pmf_z
+def get_sample_pmf(gap_times=OBSERVED_GAP_TIMES, name=''):
+    xs = make_range(low=10, high=1200)
+    pdf = EstimatedPdf(gap_times)
+    pmf = pdf.make_pmf(xs, name=name)
+    return pmf
 
 
-def bias_pmf(pmf, name='', invert=False):
-    new_pmf = pmf.copy(name=name)
+def bias_pmf(pmf, name=''):
+    pmf_new = pmf.copy(name=name)
     for x, p in pmf.iter_items():
-        if invert:
-            new_pmf.mult(x, 1.0 / x)
-        else:
-            new_pmf.mult(x, x)
-    new_pmf.normalize()
-    return new_pmf
+        pmf_new.mult(x, x)
+    pmf_new.normalize()
+    return pmf_new
 
 
 def unbias_pmf(pmf, name=''):
-    return bias_pmf(pmf, name, invert=True)
+    pmf_new = pmf.copy(name=name)
+    for x, p in pmf.iter_items():
+        pmf_new.mult(x, 1.0 / x)
+    pmf_new.normalize()
+    return pmf_new
 
 
 def pmf_of_wait_time(pmf_zb):
-    meta_pmf = {}
+    pmf_meta = Pmf()
     for gap, prob in pmf_zb.iter_items():
         uniform = make_uniform_pmf(0, gap)
-        meta_pmf[uniform] = prob
-    pmf_y = util.make_mixture(meta_pmf)
+        pmf_meta.set(uniform, prob)
+    pmf_y = make_mixture(pmf_meta)
     return pmf_y
 
 

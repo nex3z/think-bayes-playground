@@ -1,10 +1,10 @@
 from common.Suite import Suite
-import common.util as util
+from common.util import eval_poisson_pmf
 
 
 class Elapsed(Suite):
     def likelihood(self, data, hypo):
         x = hypo
         lam, k = data
-        like = util.eval_poisson_pmf(lam * x, k)
+        like = eval_poisson_pmf(lam * x, k)
         return like
