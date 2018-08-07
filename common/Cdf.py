@@ -1,3 +1,5 @@
+import random
+
 import matplotlib.pyplot as plt
 import pandas as pd
 
@@ -56,6 +58,12 @@ class Cdf(DfWrapper):
             pmf.incr(value, prob - prev)
             prev = prob
         return pmf
+
+    def random(self):
+        return self.value(random.random())
+
+    def sample(self, n):
+        return [self.random() for _ in range(n)]
 
     def plot(self, legend=False):
         ax = self.d.plot(legend=legend)

@@ -1,7 +1,7 @@
-import numpy as np
-import pandas as pd
-import scipy.stats
 import math
+
+import numpy as np
+import scipy.stats
 
 from common.Pmf import Pmf
 
@@ -13,6 +13,14 @@ def make_mixture(meta_pmf, name='mix'):
             mix.incr(x, p1 * p2)
     mix.normalize()
     return mix
+
+
+def make_cdf_from_list(values, name=''):
+    pmf = Pmf()
+    for value in values:
+        pmf.incr(value)
+    pmf.normalize()
+    return pmf.make_cdf(name=name)
 
 
 def make_pmf_from_list(values, name=''):
@@ -58,24 +66,6 @@ def make_exponential_pmf(lam, high, n=200):
         pmf.set(x, p)
     pmf.normalize()
     return pmf
-
-
-def make_goal_pmf(suite):
-    meta_pmf = {}
-    for lam, prob in suite.iter_items():
-        pmf = make_poisson_pmf(lam, 10)
-        meta_pmf[pmf] = prob
-    mix = make_mixture(meta_pmf)
-    return mix
-
-
-def make_time_pmf(suite):
-    meta_pmf = {}
-    for lam, prob in suite.iter_items():
-        pmf = make_exponential_pmf(lam, high=2, n=201)
-        meta_pmf[pmf] = prob
-    mix = make_mixture(meta_pmf)
-    return mix
 
 
 def pmf_prob_less(pmf_1, pmf_2):
