@@ -66,14 +66,16 @@ class Cdf(DfWrapper):
         return [self.random() for _ in range(n)]
 
     def plot(self, legend=False):
-        ax = self.d.plot(legend=legend)
+        fig, ax = plt.subplots()
+        plt.plot(self.d.value, self.d.prob)
         ax.set_xlabel(self.value_desc)
         ax.set_ylabel('Probability')
 
     def plot_with(self, cdfs):
         plt.figure()
-        plt.plot(self.d.index, self.d.prob, label=self.name)
+        plt.plot(self.d.value, self.d.prob, label=self.name)
         for cdf in cdfs:
             plt.plot(cdf.d.prob, label=cdf.name)
         plt.legend()
         plt.show()
+

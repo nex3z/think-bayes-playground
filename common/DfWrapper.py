@@ -6,7 +6,7 @@ import copy
 
 
 class DfWrapper(object):
-    def __init__(self, values=None, name=''):
+    def __init__(self, values=None, probs=None, name=''):
         self.name = name
         self.d = pd.DataFrame(columns=['prob'])
         self.d.prob = self.d.prob.astype(float)
@@ -15,7 +15,9 @@ class DfWrapper(object):
         if values is None:
             return
 
-        if isinstance(values, dict):
+        if probs is not None:
+            self.__init_value_prob(values, probs)
+        elif isinstance(values, dict):
             self.__init_map(values)
         elif isinstance(values, common.Pmf.Pmf):
             self.__init_pmf(values)
@@ -31,13 +33,17 @@ class DfWrapper(object):
         if len(self.d) > 0:
             self.normalize()
 
+    def __init_value_prob(self, values, probs):
+        self.d.value = values
+        self.d.prob = probs
+
     def __init_pmf(self, pmf):
         for value, prob in pmf.iter_items():
             self.set(value, prob)
 
     def __init_sequence(self, values):
-        for value in values:
-            self.set(value, 1.0)
+        self.d.value = values
+        self.d.prob = 1.0
 
     def __init_map(self, mapping):
         for value, prob in mapping.items():

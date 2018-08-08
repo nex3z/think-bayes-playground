@@ -7,8 +7,8 @@ from common.DfWrapper import DfWrapper
 
 
 class Pmf(DfWrapper):
-    def __init__(self, values=None, name='', value_desc=''):
-        super().__init__(values, name)
+    def __init__(self, values=None, probs=None, name='', value_desc=''):
+        super().__init__(values, probs, name)
         self.value_desc = value_desc
 
     def __add__(self, other):
