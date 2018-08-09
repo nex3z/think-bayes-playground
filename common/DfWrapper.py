@@ -1,16 +1,14 @@
-import pandas as pd
-
-import common.Pmf
-import common.Pmf
 import copy
+
+import numpy as np
+import pandas as pd
 
 
 class DfWrapper(object):
     def __init__(self, values=None, probs=None, name=''):
         self.name = name
-        self.d = pd.DataFrame(columns=['prob'])
+        self.d = pd.DataFrame(columns=['value', 'prob'])
         self.d.prob = self.d.prob.astype(float)
-        self.d.index.name = 'value'
 
         if values is None:
             return
@@ -19,8 +17,8 @@ class DfWrapper(object):
             self.__init_value_prob(values, probs)
         elif isinstance(values, dict):
             self.__init_map(values)
-        elif isinstance(values, common.Pmf.Pmf):
-            self.__init_pmf(values)
+        elif isinstance(values, DfWrapper):
+            self.__init_df_wrapper(values)
         else:
             init_methods = [self.__init_sequence, self.__init_failure]
             for method in init_methods:
@@ -37,45 +35,53 @@ class DfWrapper(object):
         self.d.value = values
         self.d.prob = probs
 
-    def __init_pmf(self, pmf):
-        for value, prob in pmf.iter_items():
+    def __init_map(self, mapping):
+        for value, prob in mapping.items():
             self.set(value, prob)
+
+    def __init_df_wrapper(self, df_wrapper):
+        self.d = df_wrapper.d.copy()
 
     def __init_sequence(self, values):
         self.d.value = values
         self.d.prob = 1.0
 
-    def __init_map(self, mapping):
-        for value, prob in mapping.items():
-            self.set(value, prob)
-
     def __init_failure(self, values):
         raise ValueError('Initialization failed')
 
     def iter_items(self):
-        return self.d.prob.iteritems()
+        return self.d.itertuples(index=False)
 
     def values(self):
-        return self.d.index.values
+        return self.d.value.values
 
     def set(self, value, prob):
-        self.d.loc[value] = prob
+        select = self.d.value == value
+        if any(select):
+            self.d.prob[select] = prob
+        else:
+            self.d = self.d.append({'value': value, 'prob': prob}, ignore_index=True)
 
     def get(self, value, default=0):
-        return self.d.prob.get(value, default)
+        result = self.d.loc[self.d.value == value, 'prob']
+        return result.values[0] if len(result) > 0 else default
 
-    def mult(self, value, factor):
-        self.d.loc[value] = self.d.loc[value] * factor
+    def mult(self, value=np.nan, factor=1.0):
+        if pd.isna(value):
+            self.d.prob = self.d.prob * factor
+        else:
+            select = self.d.value == value
+            self.d.loc[select, 'prob'] = self.d.loc[select, 'prob'] * factor
 
     def incr(self, value, term=1):
-        if value in self.d.index:
-            self.d.loc[value] = self.d.loc[value] + term
+        select = self.d.value == value
+        if any(select):
+            self.d.loc[select, 'prob'] = self.d.loc[select, 'prob'] + term
         else:
-            self.set(value, term)
-            self.sort()
+            self.d = self.d.append({'value': value, 'prob': term}, ignore_index=True)
 
-    def sort(self):
-        self.d.sort_index(inplace=True)
+    def sort_by_value(self):
+        self.d.sort_values(by='value', inplace=True)
 
     def total(self):
         total = self.d.prob.sum()
@@ -90,8 +96,8 @@ class DfWrapper(object):
         self.d.prob *= factor
         return total
 
-    def print(self):
-        print(self.d)
+    def print(self, float_format='%.6g'):
+        print(self.d.to_csv(sep='\t', float_format=float_format, index=False))
 
     def is_empty(self):
         return len(self.d) == 0
@@ -101,6 +107,3 @@ class DfWrapper(object):
         new.d = self.d.copy()
         new.name = name if name is not None else self.name
         return new
-
-    # def __iter__(self):
-    #     return self.d.iterrows()

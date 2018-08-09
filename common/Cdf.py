@@ -14,28 +14,27 @@ class Cdf(DfWrapper):
 
         xs = [] if xs is None else xs
         ps = [] if ps is None else ps
-        self.d = pd.DataFrame({'prob': ps}, index=xs)
-        self.d.index.name = 'value'
+        self.d = pd.DataFrame({'value': xs, 'prob': ps})
 
     def prob(self, x):
-        if x < self.d.index[0]:
+        if x < self.d.value.iat[0]:
             return 0.0
-        index = self.d.index.searchsorted(x)
-        return self.d.prob.iat[index - 1]
+        pos = self.d.value.searchsorted(x)[0]
+        return self.d.prob.iat[pos - 1]
 
     def value(self, p):
         if p < 0 or p > 1:
             raise ValueError('Probability p must be in range [0, 1]')
         elif p == 0:
-            return self.d.index[0]
+            return self.d.value.iat[0]
         elif p == 1:
-            return self.d.index[-1]
+            return self.d.value.iat[-1]
         else:
             pos = self.d.prob.searchsorted(p)[0]
             if p == self.d.prob.iat[pos - 1]:
-                return self.d.index[pos - 1]
+                return self.d.value.iat[pos - 1]
             else:
-                return self.d.index[pos]
+                return self.d.value.iat[pos]
 
     def percentile(self, p):
         return self.value(p / 100.0)
@@ -65,7 +64,7 @@ class Cdf(DfWrapper):
     def sample(self, n):
         return [self.random() for _ in range(n)]
 
-    def plot(self, legend=False):
+    def plot(self):
         fig, ax = plt.subplots()
         plt.plot(self.d.value, self.d.prob)
         ax.set_xlabel(self.value_desc)
@@ -75,7 +74,7 @@ class Cdf(DfWrapper):
         plt.figure()
         plt.plot(self.d.value, self.d.prob, label=self.name)
         for cdf in cdfs:
-            plt.plot(cdf.d.prob, label=cdf.name)
+            plt.plot(cdf.d.value, cdf.d.prob, label=cdf.name)
         plt.legend()
         plt.show()
 

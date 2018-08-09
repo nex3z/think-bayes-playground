@@ -26,23 +26,23 @@ class Pmf(DfWrapper):
         return pmf
 
     def prob(self, x, default=0):
-        return super(Pmf, self).get(x, default)
+        return self.get(x, default)
 
     def probs(self, xs):
         return [self.prob(x) for x in xs]
 
     def prob_greater(self, x):
-        return self.d.loc[self.d.index > x, 'prob'].sum()
+        return self.d.loc[self.d.value > x, 'prob'].sum()
 
     def prob_less(self, x):
-        return self.d.loc[self.d.index < x, 'prob'].sum()
+        return self.d.loc[self.d.value < x, 'prob'].sum()
 
     def top(self, n=5):
         df_sort = self.d.sort_values('prob', ascending=False)
         return df_sort.head(n)
 
     def mean(self):
-        return (self.d.index * self.d.prob).sum()
+        return (self.d.value * self.d.prob).sum()
 
     def percentile(self, percentage):
         p = percentage / 100.0
@@ -74,27 +74,27 @@ class Pmf(DfWrapper):
 
     def make_cdf(self, name=None):
         df_cdf = self.d.copy()
-        df_cdf.sort_index(inplace=True)
+        df_cdf.sort_values(by='value', inplace=True)
         name = name if name is not None else self.name
-        return common.Cdf.Cdf(df_cdf.index, df_cdf.prob.cumsum(), name, self.value_desc)
+        return common.Cdf.Cdf(df_cdf.value, df_cdf.prob.cumsum(), name, self.value_desc)
 
-    def print(self):
-        print(self.d)
-
-    def plot(self, legend=False):
-        ax = self.d.plot(legend=legend)
+    def plot(self):
+        fig, ax = plt.subplots()
+        plt.plot(self.d.value, self.d.prob)
         ax.set_xlabel(self.value_desc)
         ax.set_ylabel('Probability')
 
     def plot_with(self, pmfs):
         plt.figure()
-        plt.plot(self.d.index, self.d.prob, label=self.name)
+        plt.plot(self.d.value, self.d.prob, label=self.name)
         for pmf in pmfs:
-            plt.plot(pmf.d.prob, label=pmf.name)
+            plt.plot(pmf.d.value, pmf.d.prob, label=pmf.name)
         plt.legend()
         plt.show()
 
-    def plot_bar(self, legend=False):
-        ax = self.d.plot.bar(legend=legend)
+    def plot_bar(self):
+        fig, ax = plt.subplots()
+        ax.bar(self.d.value, self.d.prob)
         ax.set_xlabel(self.value_desc)
         ax.set_ylabel('Probability')
+        plt.show()
