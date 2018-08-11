@@ -10,6 +10,7 @@ def sample_sum(dists, n, name=''):
     pmf = Pmf(name=name)
     for value in values:
         pmf.incr(value)
+    pmf.sort_by_value()
     pmf.normalize()
     return pmf
 
@@ -20,10 +21,10 @@ def random_max(dists):
 
 def sample_max(dists, n, name=''):
     values = [random_max(dists) for _ in range(n)]
-    # print(values)
     pmf = Pmf(name=name)
     for value in values:
         pmf.incr(value)
+    pmf.sort_by_value()
     pmf.normalize()
     return pmf
 
