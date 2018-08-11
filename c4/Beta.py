@@ -29,7 +29,7 @@ class Beta(object):
 
         xs = [i / (steps - 1.0) for i in range(steps)]
         probs = [self.eval_pdf(x) for x in xs]
-        pmf = Pmf(dict(zip(xs, probs)), name)
+        pmf = Pmf(values=xs, probs=probs, name=name)
         return pmf
 
     def make_cdf(self, steps=101):
