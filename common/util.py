@@ -50,6 +50,10 @@ def eval_exponential_pdf(lam, x):
     return lam * math.exp(-lam * x)
 
 
+def eval_gaussian_pdf(x, mu, sigma):
+    return scipy.stats.norm.pdf(x, mu, sigma)
+
+
 def make_poisson_pmf(lam, high):
     pmf = Pmf()
     for k in range(0, high + 1):
@@ -60,11 +64,9 @@ def make_poisson_pmf(lam, high):
 
 
 def make_exponential_pmf(lam, high, n=200):
-    pmf = Pmf()
-    for x in np.linspace(0, high, n):
-        p = eval_exponential_pdf(lam, x)
-        pmf.set(x, p)
-    pmf.normalize()
+    xs = np.linspace(0, high, n)
+    probs = [eval_exponential_pdf(lam, x) for x in xs]
+    pmf = Pmf(values=xs, probs=probs)
     return pmf
 
 

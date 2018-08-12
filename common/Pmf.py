@@ -1,5 +1,5 @@
 import random
-
+import itertools
 import matplotlib.pyplot as plt
 
 import common.Cdf
@@ -13,16 +13,14 @@ class Pmf(DfWrapper):
 
     def __add__(self, other):
         pmf = Pmf()
-        for v1, p1 in self.iter_items():
-            for v2, p2 in other.iter_items():
-                pmf.incr(v1 + v2, p1 * p2)
+        for (v1, p1), (v2, p2) in itertools.product(self.iter_items(), other.iter_items()):
+            pmf.incr(v1 + v2, p1 * p2)
         return pmf
 
     def __sub__(self, other):
         pmf = Pmf()
-        for v1, p1 in self.iter_items():
-            for v2, p2 in other.iter_items():
-                pmf.incr(v1 - v2, p1 * p2)
+        for (v1, p1), (v2, p2) in itertools.product(self.iter_items(), other.iter_items()):
+            pmf.incr(v1 - v2, p1 * p2)
         return pmf
 
     def prob(self, x, default=0):
@@ -57,7 +55,8 @@ class Pmf(DfWrapper):
         return cdf.credible_interval(percentage)
 
     def max_likelihood(self):
-        return self.d.prob.idxmax()
+        idx = self.d.prob.idxmax()
+        return self.d.values[idx]
 
     def random(self):
         if self.is_empty():
