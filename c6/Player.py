@@ -52,7 +52,7 @@ class Player(object):
     def plot(self):
         plt.figure()
         if self.prior is not None:
-            plt.plot(self.prior.d, label="prior")
+            plt.plot(self.prior.d.value, self.prior.d.prob, label="prior")
         if self.posterior is not None:
-            plt.plot(self.posterior.d, label="posterior")
+            plt.plot(self.posterior.d.value, self.posterior.d.prob, label="posterior")
         plt.legend()
