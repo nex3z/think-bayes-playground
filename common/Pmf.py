@@ -1,6 +1,8 @@
-import random
 import itertools
+import random
+
 import matplotlib.pyplot as plt
+import numpy as np
 
 import common.Cdf
 from common.DfWrapper import DfWrapper
@@ -54,6 +56,9 @@ class Pmf(DfWrapper):
         cdf = self.make_cdf()
         return cdf.credible_interval(percentage)
 
+    def max_like(self):
+        return self.d.prob.max()
+
     def max_likelihood(self):
         idx = self.d.prob.idxmax()
         return self.d.values[idx]
@@ -76,6 +81,15 @@ class Pmf(DfWrapper):
         df_cdf.sort_values(by='value', inplace=True)
         name = name if name is not None else self.name
         return common.Cdf.Cdf(df_cdf.value, df_cdf.prob.cumsum(), name, self.value_desc)
+
+    def log(self):
+        m = self.max_like()
+        self.d.drop(self.d[self.d.prob <= 0].index, inplace=True)
+        self.d.prob = np.log(self.d.prob / m)
+
+    def exp(self):
+        m = self.max_like()
+        self.d.prob = np.exp(self.d.prob - m)
 
     def plot(self):
         fig, ax = plt.subplots()
