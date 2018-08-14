@@ -4,6 +4,7 @@ import pickle
 import numpy as np
 
 from common.Pmf import Pmf
+from common.util import median_s
 
 
 def load_height(path='./variability_data_1000.pkl'):
@@ -19,15 +20,18 @@ def jitter(values, jitter=0.5):
     return values + noise
 
 
-def find_prior_ranges(xs, num_points=31, num_stderrs=3.0):
+def find_prior_ranges(xs, num_points=31, num_stderrs=3.0, median_flag=False):
     def make_range(estimate, stderr):
         spread = stderr * num_stderrs
         array = np.linspace(estimate - spread, estimate + spread, num_points)
         return array
 
     n = len(xs)
-    m = np.mean(xs)
-    s = np.std(xs)
+    if median_flag:
+        m, s = median_s(xs, 1)
+    else:
+        m = np.mean(xs)
+        s = np.std(xs)
 
     stderr_m = s / math.sqrt(n)
     mus = make_range(m, stderr_m)

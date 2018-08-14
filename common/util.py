@@ -2,8 +2,12 @@ import math
 
 import numpy as np
 import scipy.stats
+import scipy.special
 
 from common.Pmf import Pmf
+
+
+ROOT2 = math.sqrt(2)
 
 
 def make_mixture(meta_pmf, name='mix'):
@@ -54,6 +58,10 @@ def eval_gaussian_pdf(x, mu, sigma):
     return scipy.stats.norm.pdf(x, mu, sigma)
 
 
+def eval_gaussian_log_pdf(x, mu, sigma):
+    return scipy.stats.norm.logpdf(x, mu, sigma)
+
+
 def make_poisson_pmf(lam, high):
     pmf = Pmf()
     for k in range(0, high + 1):
@@ -70,6 +78,10 @@ def make_exponential_pmf(lam, high, n=200):
     return pmf
 
 
+def standard_gaussian_cdf(x):
+    return (scipy.special.erf(x / ROOT2) + 1) / 2
+
+
 def pmf_prob_less(pmf_1, pmf_2):
     total = 0.0
     for v1, p1 in pmf_1.iter_items():
@@ -77,3 +89,18 @@ def pmf_prob_less(pmf_1, pmf_2):
             if v1 < v2:
                 total += p1 * p2
     return total
+
+
+def median_ipr(xs, p):
+    cdf = make_cdf_from_list(xs)
+    median = cdf.percentile(50)
+    alpha = (1 - p) / 2.0
+    ipr = cdf.value(1 - alpha) - cdf.value(alpha)
+    return median, ipr
+
+
+def median_s(xs, num_sigmas):
+    half_p = standard_gaussian_cdf(num_sigmas) - 0.5
+    median, ipr = median_ipr(xs, half_p * 2)
+    s = ipr / 2.0 / num_sigmas
+    return median, s
