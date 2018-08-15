@@ -12,9 +12,8 @@ def make_goal_pmf(suite):
 
 
 def make_goal_time_pmf(suite):
-    meta_pmf = Pmf()
-    for lam, prob in suite.iter_items():
-        pmf = make_exponential_pmf(lam, high=2, n=201)
-        meta_pmf.set(pmf, prob)
+    pmfs = [make_exponential_pmf(lam, high=2, n=201) for lam, _ in suite.iter_items()]
+    probs = [prob for _, prob in suite.iter_items()]
+    meta_pmf = Pmf(values=pmfs, probs=probs)
     mix = make_mixture(meta_pmf, name=suite.name)
     return mix
