@@ -66,6 +66,10 @@ class DfWrapper(object):
         result = self.d.loc[self.d.value == value, 'prob']
         return result.values[0] if len(result) > 0 else default
 
+    def remove(self, value):
+        self.d = self.d[self.d.value != value]
+        self.d.reset_index(drop=True, inplace=True)
+
     def mult(self, value=np.nan, factor=1.0):
         if pd.isna(value):
             self.d.prob = self.d.prob * factor
