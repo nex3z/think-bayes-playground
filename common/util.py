@@ -62,6 +62,10 @@ def eval_gaussian_log_pdf(x, mu, sigma):
     return scipy.stats.norm.logpdf(x, mu, sigma)
 
 
+def eval_binomial_pmf(k, n, p):
+    return scipy.stats.binom.pmf(k, n, p)
+
+
 def make_poisson_pmf(lam, high):
     pmf = Pmf()
     for k in range(0, high + 1):
