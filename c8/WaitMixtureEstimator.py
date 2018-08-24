@@ -18,12 +18,12 @@ class WaitMixtureEstimator(object):
         plt.figure(figsize=(8, 6))
 
         mix_cdf = self.mixture.make_cdf()
-        mix_cdf.d = mix_cdf.d.loc[mix_cdf.d.index <= time_limit, ]
-        plt.plot(mix_cdf.d.index, mix_cdf.d.prob, color='r')
+        mix_cdf.d = mix_cdf.d.loc[mix_cdf.d.value <= time_limit, ]
+        plt.plot(mix_cdf.d.value, mix_cdf.d.prob, color='r')
 
         for pmf in self.meta_pmf.values():
             cdf = pmf.make_cdf()
-            cdf.d = cdf.d.loc[cdf.d.index <= time_limit, ]
-            plt.plot(cdf.d.prob, color='b')
+            cdf.d = cdf.d.loc[cdf.d.value <= time_limit, ]
+            plt.plot(cdf.d.value, cdf.d.prob, color='b')
 
         plt.show()

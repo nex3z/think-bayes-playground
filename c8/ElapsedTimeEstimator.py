@@ -22,5 +22,5 @@ def predict_wait_time(pmf_zb, pmf_x):
 
 
 def remove_negatives(pmf):
-    pmf.d = pmf.d.loc[pmf.d.index >= 0, ]
+    pmf.d = pmf.d.loc[pmf.d.value >= 0, ]
     pmf.normalize()
