@@ -10,9 +10,6 @@ def strafing_speed(alpha, beta, x):
 
 
 def make_location_pmf(alpha, beta, locations, name=''):
-    pmf = Pmf(name=name)
-    for x in locations:
-        prob = 1.0 / strafing_speed(alpha, beta, x)
-        pmf.set(x, prob)
-    pmf.normalize()
+    probs = [1.0 / strafing_speed(alpha, beta, x) for x in locations]
+    pmf = Pmf(values=locations, probs=probs, name=name)
     return pmf
