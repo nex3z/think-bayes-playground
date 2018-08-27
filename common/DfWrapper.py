@@ -55,6 +55,9 @@ class DfWrapper(object):
     def values(self):
         return self.d.value.values
 
+    def probs(self):
+        return self.d.prob.values
+
     def set(self, value, prob):
         select = self.d.value == value
         if any(select):
