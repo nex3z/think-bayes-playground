@@ -28,9 +28,6 @@ class Pmf(DfWrapper):
     def prob(self, x, default=0):
         return self.get(x, default)
 
-    def probs(self, xs):
-        return [self.prob(x) for x in xs]
-
     def prob_greater(self, x):
         return self.d.loc[self.d.value > x, 'prob'].sum()
 
