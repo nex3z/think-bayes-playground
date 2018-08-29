@@ -47,7 +47,8 @@ def make_gaussian_pmf(mu, sigma, num_sigmas, n=101):
 
 
 def eval_poisson_pmf(lam, k):
-    return lam ** k * math.exp(-lam) / math.factorial(k)
+    # return lam ** k * math.exp(-lam) / math.factorial(k)
+    return scipy.stats.poisson.pmf(k, lam)
 
 
 def eval_exponential_pdf(lam, x):
@@ -62,13 +63,17 @@ def eval_gaussian_log_pdf(x, mu, sigma):
     return scipy.stats.norm.logpdf(x, mu, sigma)
 
 
+def gaussian_cdf(x, mu=0, sigma=1):
+    return standard_gaussian_cdf(float(x - mu) / sigma)
+
+
 def eval_binomial_pmf(k, n, p):
     return scipy.stats.binom.pmf(k, n, p)
 
 
-def make_poisson_pmf(lam, high):
+def make_poisson_pmf(lam, high, step=1):
     pmf = Pmf()
-    for k in range(0, high + 1):
+    for k in range(0, high + 1, step):
         p = eval_poisson_pmf(lam, k)
         pmf.set(k, p)
     pmf.normalize()
@@ -108,3 +113,20 @@ def median_s(xs, num_sigmas):
     median, ipr = median_ipr(xs, half_p * 2)
     s = ipr / 2.0 / num_sigmas
     return median, s
+
+
+def mean(t):
+    return float(sum(t)) / len(t)
+
+
+def var(t, mu=None):
+    mu = mu if mu else mean(t)
+    dev2 = [(x - mu)**2 for x in t]
+    v = mean(dev2)
+    return v
+
+
+def mean_var(t):
+    mu = mean(t)
+    v = var(t, mu)
+    return mu, v
